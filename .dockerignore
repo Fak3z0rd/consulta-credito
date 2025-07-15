@@ -1,0 +1,34 @@
+# Arquivos do Git
+.git
+.gitignore
+
+# Arquivos do IDE
+.idea
+.vscode
+*.iml
+
+# Logs
+*.log
+
+# Arquivos temporários
+*.tmp
+*.temp
+
+# Arquivos do sistema
+.DS_Store
+Thumbs.db
+
+# Arquivos de build (serão recriados)
+.gradle/
+
+# Arquivos de Docker
+Dockerfile
+docker-compose*.yml
+.dockerignore
+
+# Arquivos de documentação
+README.md
+*.md
+
+# Arquivos de teste
+src/test/ 
