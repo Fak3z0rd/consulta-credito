@@ -55,7 +55,7 @@ public class CreditoControllerTest {
     void testBuscarPorNfse_QuandoEncontrado() throws Exception {
         when(creditoService.buscarPorNfse("7891011")).thenReturn(Optional.of(mockCredito));
 
-        mockMvc.perform(get("/creditos/nfse/7891011"))
+        mockMvc.perform(get("/api/creditos/7891011"))
                .andExpect(status().isOk())
                .andExpect(jsonPath("$.id").value(1))
                .andExpect(jsonPath("$.numeroCredito").value("123456"))
@@ -76,7 +76,7 @@ public class CreditoControllerTest {
     void testBuscarPorNfse_QuandoNaoEncontrado() throws Exception {
         when(creditoService.buscarPorNfse("999999")).thenReturn(Optional.empty());
 
-        mockMvc.perform(get("/creditos/nfse/999999"))
+        mockMvc.perform(get("/api/creditos/999999"))
                .andExpect(status().isNotFound());
 
         verify(creditoService, times(1)).buscarPorNfse("999999");
@@ -86,7 +86,7 @@ public class CreditoControllerTest {
     void testBuscarPorNfse_ComParametroVazio() throws Exception {
         when(creditoService.buscarPorNfse(" ")).thenReturn(Optional.empty());
 
-        mockMvc.perform(get("/creditos/nfse/ "))
+        mockMvc.perform(get("/api/creditos/ "))
                .andExpect(status().isNotFound());
 
         verify(creditoService, times(1)).buscarPorNfse(" ");
@@ -96,7 +96,7 @@ public class CreditoControllerTest {
     void testBuscarPorNumeroCredito_QuandoEncontrado() throws Exception {
         when(creditoService.buscarPorNumeroCredito("123456")).thenReturn(List.of(mockCredito));
 
-        mockMvc.perform(get("/creditos/numero/123456"))
+        mockMvc.perform(get("/api/creditos/credito/123456"))
                .andExpect(status().isOk())
                .andExpect(jsonPath("$[0].id").value(1))
                .andExpect(jsonPath("$[0].numeroCredito").value("123456"))
@@ -112,7 +112,7 @@ public class CreditoControllerTest {
     void testBuscarPorNumeroCredito_QuandoEncontraMultiplosCreditos() throws Exception {
         when(creditoService.buscarPorNumeroCredito("123456")).thenReturn(List.of(mockCredito, mockCredito2));
 
-        mockMvc.perform(get("/creditos/numero/123456"))
+        mockMvc.perform(get("/api/creditos/credito/123456"))
                .andExpect(status().isOk())
                .andExpect(jsonPath("$").isArray())
                .andExpect(jsonPath("$[0].id").value(1))
@@ -128,7 +128,7 @@ public class CreditoControllerTest {
     void testBuscarPorNumeroCredito_QuandoNaoEncontrado() throws Exception {
         when(creditoService.buscarPorNumeroCredito("999999")).thenReturn(List.of());
 
-        mockMvc.perform(get("/creditos/numero/999999"))
+        mockMvc.perform(get("/api/creditos/credito/999999"))
                .andExpect(status().isOk())
                .andExpect(jsonPath("$").isArray())
                .andExpect(jsonPath("$").isEmpty());
@@ -140,7 +140,7 @@ public class CreditoControllerTest {
     void testBuscarPorNumeroCredito_ComParametroVazio() throws Exception {
         when(creditoService.buscarPorNumeroCredito(" ")).thenReturn(List.of());
 
-        mockMvc.perform(get("/creditos/numero/ "))
+        mockMvc.perform(get("/api/creditos/credito/ "))
                .andExpect(status().isOk())
                .andExpect(jsonPath("$").isArray())
                .andExpect(jsonPath("$").isEmpty());
@@ -150,13 +150,13 @@ public class CreditoControllerTest {
 
     @Test
     void testEndpointNaoExiste() throws Exception {
-        mockMvc.perform(get("/creditos/invalid/endpoint"))
+        mockMvc.perform(get("/api/creditos/invalid/endpoint"))
                .andExpect(status().isNotFound());
     }
 
     @Test
     void testMetodoNaoSuportado() throws Exception {
-        mockMvc.perform(post("/creditos/nfse/7891011"))
+        mockMvc.perform(post("/api/creditos/7891011"))
                .andExpect(status().isMethodNotAllowed());
     }
 }
