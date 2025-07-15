@@ -24,17 +24,17 @@ public class CreditoController {
     }
 
     @GetMapping("/{nfse}")
-    public ResponseEntity<Credito> buscarPorNfse(@PathVariable String nfse) {
+    public ResponseEntity<List<Credito>> buscarPorNfse(@PathVariable String nfse) {
         kafkaProducer.sendMessage("consulta-nfse", nfse);
-        return creditoService.buscarPorNfse(nfse)
-            .map(ResponseEntity::ok)
-            .orElse(ResponseEntity.notFound().build());
+        List<Credito> creditos = creditoService.buscarPorNfse(nfse);
+        return ResponseEntity.ok(creditos);
     }
 
-    @GetMapping("/credito/{numeroCredito}")
-    public ResponseEntity<List<Credito>> buscarPorNumeroCredito(@PathVariable String numeroCredito) {
+    @GetMapping("/numero/{numeroCredito}")
+    public ResponseEntity<Credito> buscarPorNumeroCredito(@PathVariable String numeroCredito) {
         kafkaProducer.sendMessage("consulta-numero-credito", numeroCredito);
-        List<Credito> creditos = creditoService.buscarPorNumeroCredito(numeroCredito);
-        return ResponseEntity.ok(creditos);
+        return creditoService.buscarPorNumeroCredito(numeroCredito)
+            .map(ResponseEntity::ok)
+            .orElse(ResponseEntity.notFound().build());
     }
 }

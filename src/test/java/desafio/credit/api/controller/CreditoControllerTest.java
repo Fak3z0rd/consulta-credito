@@ -53,66 +53,31 @@ public class CreditoControllerTest {
 
     @Test
     void testBuscarPorNfse_QuandoEncontrado() throws Exception {
-        when(creditoService.buscarPorNfse("7891011")).thenReturn(Optional.of(mockCredito));
+        when(creditoService.buscarPorNfse("7891011")).thenReturn(List.of(mockCredito));
 
         mockMvc.perform(get("/api/creditos/7891011"))
                .andExpect(status().isOk())
-               .andExpect(jsonPath("$.id").value(1))
-               .andExpect(jsonPath("$.numeroCredito").value("123456"))
-               .andExpect(jsonPath("$.numeroNfse").value("7891011"))
-               .andExpect(jsonPath("$.dataConstituicao").value("2024-02-25"))
-               .andExpect(jsonPath("$.valorIssqn").value(1500.75))
-               .andExpect(jsonPath("$.tipoCredito").value("ISSQN"))
-               .andExpect(jsonPath("$.simplesNacional").value(true))
-               .andExpect(jsonPath("$.aliquota").value(5.0))
-               .andExpect(jsonPath("$.valorFaturado").value(30000.00))
-               .andExpect(jsonPath("$.valorDeducao").value(5000.00))
-               .andExpect(jsonPath("$.baseCalculo").value(25000.00));
+               .andExpect(jsonPath("$").isArray())
+               .andExpect(jsonPath("$[0].id").value(1))
+               .andExpect(jsonPath("$[0].numeroCredito").value("123456"))
+               .andExpect(jsonPath("$[0].numeroNfse").value("7891011"))
+               .andExpect(jsonPath("$[0].dataConstituicao").value("2024-02-25"))
+               .andExpect(jsonPath("$[0].valorIssqn").value(1500.75))
+               .andExpect(jsonPath("$[0].tipoCredito").value("ISSQN"))
+               .andExpect(jsonPath("$[0].simplesNacional").value(true))
+               .andExpect(jsonPath("$[0].aliquota").value(5.0))
+               .andExpect(jsonPath("$[0].valorFaturado").value(30000.00))
+               .andExpect(jsonPath("$[0].valorDeducao").value(5000.00))
+               .andExpect(jsonPath("$[0].baseCalculo").value(25000.00));
 
         verify(creditoService, times(1)).buscarPorNfse("7891011");
     }
 
     @Test
-    void testBuscarPorNfse_QuandoNaoEncontrado() throws Exception {
-        when(creditoService.buscarPorNfse("999999")).thenReturn(Optional.empty());
+    void testBuscarPorNfse_QuandoEncontraMultiplosCreditos() throws Exception {
+        when(creditoService.buscarPorNfse("7891011")).thenReturn(List.of(mockCredito, mockCredito2));
 
-        mockMvc.perform(get("/api/creditos/999999"))
-               .andExpect(status().isNotFound());
-
-        verify(creditoService, times(1)).buscarPorNfse("999999");
-    }
-
-    @Test
-    void testBuscarPorNfse_ComParametroVazio() throws Exception {
-        when(creditoService.buscarPorNfse(" ")).thenReturn(Optional.empty());
-
-        mockMvc.perform(get("/api/creditos/ "))
-               .andExpect(status().isNotFound());
-
-        verify(creditoService, times(1)).buscarPorNfse(" ");
-    }
-
-    @Test
-    void testBuscarPorNumeroCredito_QuandoEncontrado() throws Exception {
-        when(creditoService.buscarPorNumeroCredito("123456")).thenReturn(List.of(mockCredito));
-
-        mockMvc.perform(get("/api/creditos/credito/123456"))
-               .andExpect(status().isOk())
-               .andExpect(jsonPath("$[0].id").value(1))
-               .andExpect(jsonPath("$[0].numeroCredito").value("123456"))
-               .andExpect(jsonPath("$[0].numeroNfse").value("7891011"))
-               .andExpect(jsonPath("$[0].valorIssqn").value(1500.75))
-               .andExpect(jsonPath("$[0].tipoCredito").value("ISSQN"))
-               .andExpect(jsonPath("$[0].simplesNacional").value(true));
-
-        verify(creditoService, times(1)).buscarPorNumeroCredito("123456");
-    }
-
-    @Test
-    void testBuscarPorNumeroCredito_QuandoEncontraMultiplosCreditos() throws Exception {
-        when(creditoService.buscarPorNumeroCredito("123456")).thenReturn(List.of(mockCredito, mockCredito2));
-
-        mockMvc.perform(get("/api/creditos/credito/123456"))
+        mockMvc.perform(get("/api/creditos/7891011"))
                .andExpect(status().isOk())
                .andExpect(jsonPath("$").isArray())
                .andExpect(jsonPath("$[0].id").value(1))
@@ -121,29 +86,65 @@ public class CreditoControllerTest {
                .andExpect(jsonPath("$[1].numeroNfse").value("7891012"))
                .andExpect(jsonPath("$[1].valorIssqn").value(2000.50));
 
+        verify(creditoService, times(1)).buscarPorNfse("7891011");
+    }
+
+    @Test
+    void testBuscarPorNfse_QuandoNaoEncontrado() throws Exception {
+        when(creditoService.buscarPorNfse("999999")).thenReturn(List.of());
+
+        mockMvc.perform(get("/api/creditos/999999"))
+               .andExpect(status().isOk())
+               .andExpect(jsonPath("$").isArray())
+               .andExpect(jsonPath("$").isEmpty());
+
+        verify(creditoService, times(1)).buscarPorNfse("999999");
+    }
+
+    @Test
+    void testBuscarPorNfse_ComParametroVazio() throws Exception {
+        when(creditoService.buscarPorNfse(" ")).thenReturn(List.of());
+
+        mockMvc.perform(get("/api/creditos/ "))
+               .andExpect(status().isOk())
+               .andExpect(jsonPath("$").isArray())
+               .andExpect(jsonPath("$").isEmpty());
+
+        verify(creditoService, times(1)).buscarPorNfse(" ");
+    }
+
+    @Test
+    void testBuscarPorNumeroCredito_QuandoEncontrado() throws Exception {
+        when(creditoService.buscarPorNumeroCredito("123456")).thenReturn(Optional.of(mockCredito));
+
+        mockMvc.perform(get("/api/creditos/numero/123456"))
+               .andExpect(status().isOk())
+               .andExpect(jsonPath("$.id").value(1))
+               .andExpect(jsonPath("$.numeroCredito").value("123456"))
+               .andExpect(jsonPath("$.numeroNfse").value("7891011"))
+               .andExpect(jsonPath("$.valorIssqn").value(1500.75))
+               .andExpect(jsonPath("$.tipoCredito").value("ISSQN"))
+               .andExpect(jsonPath("$.simplesNacional").value(true));
+
         verify(creditoService, times(1)).buscarPorNumeroCredito("123456");
     }
 
     @Test
     void testBuscarPorNumeroCredito_QuandoNaoEncontrado() throws Exception {
-        when(creditoService.buscarPorNumeroCredito("999999")).thenReturn(List.of());
+        when(creditoService.buscarPorNumeroCredito("999999")).thenReturn(Optional.empty());
 
-        mockMvc.perform(get("/api/creditos/credito/999999"))
-               .andExpect(status().isOk())
-               .andExpect(jsonPath("$").isArray())
-               .andExpect(jsonPath("$").isEmpty());
+        mockMvc.perform(get("/api/creditos/numero/999999"))
+               .andExpect(status().isNotFound());
 
         verify(creditoService, times(1)).buscarPorNumeroCredito("999999");
     }
 
     @Test
     void testBuscarPorNumeroCredito_ComParametroVazio() throws Exception {
-        when(creditoService.buscarPorNumeroCredito(" ")).thenReturn(List.of());
+        when(creditoService.buscarPorNumeroCredito(" ")).thenReturn(Optional.empty());
 
-        mockMvc.perform(get("/api/creditos/credito/ "))
-               .andExpect(status().isOk())
-               .andExpect(jsonPath("$").isArray())
-               .andExpect(jsonPath("$").isEmpty());
+        mockMvc.perform(get("/api/creditos/numero/ "))
+               .andExpect(status().isNotFound());
 
         verify(creditoService, times(1)).buscarPorNumeroCredito(" ");
     }

@@ -7,6 +7,6 @@ import java.util.List;
 import java.util.Optional;
 
 public interface CreditoRepository extends JpaRepository<Credito, Long> {
-    List<Credito> findByNumeroCredito(String numeroCredito);
-    Optional<Credito> findByNumeroNfse(String numeroNfse);
+    Optional<Credito> findByNumeroCredito(String numeroCredito);
+    List<Credito> findByNumeroNfse(String numeroNfse);
 }

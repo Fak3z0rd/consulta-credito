@@ -19,17 +19,17 @@ public class CreditoService {
         this.creditoRepository = creditoRepository;
     }
 
-    public Optional<Credito> buscarPorNfse(String nfse) {
-        logger.info("Buscando crédito por NFSE: {}", nfse);
-        Optional<Credito> resultado = creditoRepository.findByNumeroNfse(nfse);
-        logger.info("Resultado da busca por NFSE: {}", resultado.isPresent() ? "Encontrado" : "Não encontrado");
+    public List<Credito> buscarPorNfse(String nfse) {
+        logger.info("Buscando créditos por NFSE: {}", nfse);
+        List<Credito> resultado = creditoRepository.findByNumeroNfse(nfse);
+        logger.info("Resultado da busca por NFSE: {} créditos encontrados", resultado.size());
         return resultado;
     }
 
-    public List<Credito> buscarPorNumeroCredito(String numeroCredito) {
-        logger.info("Buscando créditos por número: {}", numeroCredito);
-        List<Credito> resultado = creditoRepository.findByNumeroCredito(numeroCredito);
-        logger.info("Resultado da busca por número: {} créditos encontrados", resultado.size());
+    public Optional<Credito> buscarPorNumeroCredito(String numeroCredito) {
+        logger.info("Buscando crédito por número: {}", numeroCredito);
+        Optional<Credito> resultado = creditoRepository.findByNumeroCredito(numeroCredito);
+        logger.info("Resultado da busca por número: {}", resultado.isPresent() ? "Encontrado" : "Não encontrado");
         return resultado;
     }
 
