@@ -11,7 +11,7 @@ import org.springframework.http.ResponseEntity;
 import java.util.List;
 
 @RestController
-@RequestMapping("/creditos")
+@RequestMapping("/api/creditos")
 public class CreditoController {
 
     private final CreditoService creditoService;
@@ -23,7 +23,7 @@ public class CreditoController {
         this.creditoService = creditoService;
     }
 
-    @GetMapping("/nfse/{nfse}")
+    @GetMapping("/{nfse}")
     public ResponseEntity<Credito> buscarPorNfse(@PathVariable String nfse) {
         kafkaProducer.sendMessage("consulta-nfse", nfse);
         return creditoService.buscarPorNfse(nfse)
@@ -31,7 +31,7 @@ public class CreditoController {
             .orElse(ResponseEntity.notFound().build());
     }
 
-    @GetMapping("/numero/{numeroCredito}")
+    @GetMapping("/credito/{numeroCredito}")
     public ResponseEntity<List<Credito>> buscarPorNumeroCredito(@PathVariable String numeroCredito) {
         kafkaProducer.sendMessage("consulta-numero-credito", numeroCredito);
         List<Credito> creditos = creditoService.buscarPorNumeroCredito(numeroCredito);
