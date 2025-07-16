@@ -1,0 +1,32 @@
+# Git
+.git
+.gitignore
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Build outputs (não necessário para dev)
+dist
+.angular
+
+# Coverage
+coverage
+.nyc_output
+
+# Cache
+.npm
+.yarn-integrity 
