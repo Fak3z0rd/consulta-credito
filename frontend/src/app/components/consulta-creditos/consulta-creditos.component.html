@@ -1,0 +1,187 @@
+<div class="container-fluid py-5 bg-light min-vh-100">
+    <!-- Header com gradiente -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="text-center">
+                <div class="bg-primary bg-gradient text-white rounded-3 p-4 shadow">
+                    <h1 class="display-6 fw-bold mb-2">
+                        <i class="bi bi-search me-3"></i>Consulta de Créditos
+                    </h1>
+                    <p class="lead mb-0 opacity-75">Sistema de consulta de créditos por NFS-e ou número do crédito</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Formulário de Busca -->
+    <div class="row justify-content-center mb-5">
+        <div class="col-12 col-lg-8 col-xl-6">
+            <div class="card border-0 shadow-lg rounded-4">
+                <div class="card-header bg-white border-0 py-4">
+                    <h4 class="text-center text-primary mb-0">
+                        <i class="bi bi-funnel me-2"></i>Filtros de Busca
+                    </h4>
+                </div>
+                <div class="card-body p-4">
+                    <form (ngSubmit)="buscar()" #consultaForm="ngForm">
+                        <!-- Tipo de Busca -->
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold text-secondary mb-3">
+                                <i class="bi bi-gear me-2"></i>Tipo de Busca:
+                            </label>
+                            <div class="d-grid gap-2 d-md-flex">
+                                <div class="flex-fill">
+                                    <input type="radio" class="btn-check" name="tipoBusca" id="nfse"
+                                        [(ngModel)]="tipoBusca" value="nfse" checked>
+                                    <label class="btn btn-outline-primary w-100 py-3" for="nfse">
+                                        <i class="bi bi-receipt me-2"></i>
+                                        <span class="d-block fw-semibold">NFS-e</span>
+                                        <small class="opacity-75">Número da Nota Fiscal</small>
+                                    </label>
+                                </div>
+                                <div class="flex-fill">
+                                    <input type="radio" class="btn-check" name="tipoBusca" id="numero"
+                                        [(ngModel)]="tipoBusca" value="numero">
+                                    <label class="btn btn-outline-primary w-100 py-3" for="numero">
+                                        <i class="bi bi-123 me-2"></i>
+                                        <span class="d-block fw-semibold">Crédito</span>
+                                        <small class="opacity-75">Número do Crédito</small>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Campo de Busca -->
+                        <div class="mb-4">
+                            <label [for]="tipoBusca === 'nfse' ? 'nfseInput' : 'numeroInput'"
+                                class="form-label fw-semibold text-secondary">
+                                <i class="bi me-2" [class.bi-receipt]="tipoBusca === 'nfse'"
+                                    [class.bi-123]="tipoBusca === 'numero'"></i>
+                                {{ tipoBusca === 'nfse' ? 'Número da NFS-e' : 'Número do Crédito' }}:
+                            </label>
+                            <div class="input-group input-group-lg shadow-sm">
+                                <span class="input-group-text bg-light border-end-0">
+                                    <i class="bi text-primary" [class.bi-receipt]="tipoBusca === 'nfse'"
+                                        [class.bi-123]="tipoBusca === 'numero'"></i>
+                                </span>
+                                <input type="text" class="form-control border-start-0 ps-0"
+                                    [id]="tipoBusca === 'nfse' ? 'nfseInput' : 'numeroInput'"
+                                    [(ngModel)]="termoBusca" name="termoBusca"
+                                    [placeholder]="tipoBusca === 'nfse' ? 'Ex: 123456789' : 'Ex: CR001'"
+                                    required>
+                                <button class="btn btn-primary px-4" type="submit">
+                                    <i class="bi bi-search me-2"></i>Buscar
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Botão Limpar -->
+                        <div class="text-center">
+                            <button type="button" class="btn btn-outline-secondary px-4" (click)="limparBusca()">
+                                <i class="bi bi-arrow-clockwise me-2"></i>Limpar Campos
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mensagens -->
+    <div class="row justify-content-center mb-4" *ngIf="error || mensagem">
+        <div class="col-12 col-lg-8 col-xl-6">
+            <div class="alert border-0 shadow-sm" [class.alert-danger]="error" [class.alert-info]="mensagem" role="alert">
+                <div class="d-flex align-items-center">
+                    <i class="bi fs-4 me-3" [class.bi-exclamation-triangle-fill]="error" [class.bi-info-circle-fill]="mensagem"></i>
+                    <div>
+                        <strong>{{ error ? 'Erro' : 'Informação' }}:</strong> {{ error || mensagem }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Resultados -->
+    <div class="row" *ngIf="creditos.length > 0">
+        <div class="col-12">
+            <div class="card border-0 shadow-lg rounded-4">
+                <div class="card-header bg-primary bg-gradient text-white border-0 py-3">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <h5 class="mb-0">
+                            <i class="bi bi-table me-2"></i>
+                            Resultados da Consulta
+                        </h5>
+                        <span class="badge bg-light text-primary fs-6">
+                            {{ creditos.length }} {{ creditos.length === 1 ? 'registro' : 'registros' }}
+                        </span>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <!-- Tabela Responsiva -->
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th scope="col" class="text-center">#</th>
+                                    <th scope="col">Nº Crédito</th>
+                                    <th scope="col">Nº NFS-e</th>
+                                    <th scope="col">Data</th>
+                                    <th scope="col" class="text-end">Valor ISSQN</th>
+                                    <th scope="col">Tipo</th>
+                                    <th scope="col" class="text-center">Simples</th>
+                                    <th scope="col" class="text-center">Alíquota</th>
+                                    <th scope="col" class="text-end">Valor Faturado</th>
+                                    <th scope="col" class="text-end">Valor Dedução</th>
+                                    <th scope="col" class="text-end">Base Cálculo</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let credito of creditos; let i = index" class="align-middle">
+                                    <td class="text-center text-muted fw-bold">{{ i + 1 }}</td>
+                                    <td>
+                                        <span class="badge bg-primary fs-6">{{ credito.numeroCredito }}</span>
+                                    </td>
+                                    <td class="fw-semibold">{{ credito.numeroNfse }}</td>
+                                    <td>
+                                        <span class="text-secondary">{{ formatarData(credito.dataConstituicao) }}</span>
+                                    </td>
+                                    <td class="text-end">
+                                        <span class="fw-bold text-success fs-6">{{ formatarMoeda(credito.valorIssqn) }}</span>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-info text-dark">{{ credito.tipoCredito }}</span>
+                                    </td>
+                                    <td class="text-center">
+                                        <span class="badge" [class.bg-success]="credito.simplesNacional"
+                                            [class.bg-secondary]="!credito.simplesNacional">
+                                            {{ credito.simplesNacional ? 'Sim' : 'Não' }}
+                                        </span>
+                                    </td>
+                                    <td class="text-center">
+                                        <span class="badge bg-warning text-dark">{{ credito.aliquota }}%</span>
+                                    </td>
+                                    <td class="text-end fw-semibold">{{ formatarMoeda(credito.valorFaturado) }}</td>
+                                    <td class="text-end text-muted">{{ formatarMoeda(credito.valorDeducao) }}</td>
+                                    <td class="text-end fw-bold text-primary">{{ formatarMoeda(credito.baseCalculo) }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Estado vazio -->
+    <div class="row justify-content-center" *ngIf="!error && !mensagem && creditos.length === 0">
+        <div class="col-12 col-lg-6 text-center">
+            <div class="card border-0 shadow-sm rounded-4">
+                <div class="card-body py-5">
+                    <i class="bi bi-search display-1 text-muted mb-3"></i>
+                    <h4 class="text-muted mb-3">Nenhuma consulta realizada</h4>
+                    <p class="text-muted">Digite um termo de busca acima para encontrar créditos</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
