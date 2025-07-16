@@ -9,9 +9,11 @@ import desafio.credit.domain.model.Credito;
 import org.springframework.http.ResponseEntity;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/creditos")
+@CrossOrigin(origins = "http://localhost:4200")
 public class CreditoController {
 
     private final CreditoService creditoService;
@@ -33,8 +35,11 @@ public class CreditoController {
     @GetMapping("/numero/{numeroCredito}")
     public ResponseEntity<Credito> buscarPorNumeroCredito(@PathVariable String numeroCredito) {
         kafkaProducer.sendMessage("consulta-numero-credito", numeroCredito);
-        return creditoService.buscarPorNumeroCredito(numeroCredito)
-            .map(ResponseEntity::ok)
-            .orElse(ResponseEntity.notFound().build());
+        Optional<Credito> credito = creditoService.buscarPorNumeroCredito(numeroCredito);
+        if (credito.isPresent()) {
+            return ResponseEntity.ok(credito.get());
+        } else {
+            return ResponseEntity.ok().build();
+        }
     }
 }
