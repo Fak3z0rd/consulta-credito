@@ -85,7 +85,7 @@ npm start
 
 Após a execução, os serviços estarão disponíveis em:
 
-- **Frontend**: http://localhost:4200
+- **Frontend**: http://localhost
 - **Backend API**: http://localhost:8080
 - **PostgreSQL**: localhost:5432
 - **Kafka**: localhost:9092

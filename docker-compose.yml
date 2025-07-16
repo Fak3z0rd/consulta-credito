@@ -1,5 +1,6 @@
 services:
-  app:
+  # Backend Spring Boot
+  backend:
     build: .
     ports:
       - "8080:8080"
@@ -12,6 +13,20 @@ services:
       - SPRING_DATASOURCE_PASSWORD=password
       - SPRING_JPA_HIBERNATE_DDL_AUTO=create-drop
       - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+    networks:
+      - credit-network
+
+  # Frontend Angular (Desenvolvimento Local)
+  frontend:
+    build: ./frontend
+    ports:
+      - "80:4200"
+    depends_on:
+      - backend
+    volumes:
+      - ./frontend/src:/app/src  # Hot reload do código
+    environment:
+      - NODE_ENV=development
     networks:
       - credit-network
 

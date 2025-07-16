@@ -4,11 +4,15 @@ FROM node:20-alpine
 # Define o diretório de trabalho
 WORKDIR /app
 
+# Instala dependências do sistema necessárias
+RUN apk add --no-cache python3 make g++
+
 # Copia os arquivos de dependências
 COPY package*.json ./
 
 # Instala todas as dependências (incluindo devDependencies)
-RUN npm install
+# Força reinstalação para resolver problemas de arquitetura
+RUN rm -rf node_modules package-lock.json && npm install
 
 # Copia o código fonte
 COPY . .
